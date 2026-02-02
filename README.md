@@ -6,7 +6,7 @@
 
 Sistema de gestión de reservas con API REST, autenticación JWT y pruebas automatizadas completas.
 
-## 🚀 Características
+## Características
 
 - ✅ API REST con Express.js
 - ✅ Autenticación JWT
@@ -16,13 +16,13 @@ Sistema de gestión de reservas con API REST, autenticación JWT y pruebas autom
 - ✅ CI/CD con GitHub Actions
 - ✅ Cobertura de código >80%
 
-## 📋 Requisitos
+## Requisitos
 
 - Node.js >= 18.x
 - MongoDB Atlas o local
 - npm >= 8.x
 
-## 🔧 Instalación
+## Instalación
 
 ```bash
 # Clonar el repositorio
@@ -37,7 +37,7 @@ cp .env.example .env
 # Editar .env con tus credenciales
 ```
 
-## ⚙️ Configuración
+## Configuración
 
 Crea un archivo `.env` en la raíz del proyecto:
 
@@ -47,7 +47,7 @@ JWT_SECRET=tu-secreto-seguro-aqui
 PORT=3000
 ```
 
-## 🏃‍♂️ Ejecución
+##  Ejecución
 
 ```bash
 # Modo desarrollo (con auto-reload)
@@ -94,7 +94,7 @@ k6 run tests/k6-spike-test.js
 k6 run tests/k6-soak-test.js
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Autenticación
 
@@ -147,7 +147,7 @@ DELETE /api/reservas/:id
 Authorization: Bearer <token>
 ```
 
-## 🔄 CI/CD (GitHub Actions)
+## CI/CD (GitHub Actions)
 
 Este proyecto incluye integración continua automática:
 
@@ -158,11 +158,11 @@ Este proyecto incluye integración continua automática:
 - ✅ Comenta resultados en PRs
 
 ### Workflow de Pruebas de Carga (Opcional)
-- 🕐 Ejecución manual o programada
-- 📊 Pruebas de rendimiento con K6
-- 📁 Guarda resultados como artefactos
+- Ejecución manual o programada
+- Pruebas de rendimiento con K6
+- Guarda resultados como artefactos
 
-## 🛠️ Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Testing_Reservas/
@@ -192,14 +192,14 @@ Testing_Reservas/
 └── README.md
 ```
 
-## 📊 Métricas de Calidad
+## Métricas de Calidad
 
 - **Cobertura de código:** >80%
 - **Pruebas unitarias:** 56+ tests
 - **Tiempo de respuesta (p95):** <500ms
 - **Tasa de errores:** <5%
 
-## 🔒 Seguridad
+## Seguridad
 
 - ✅ Contraseñas hasheadas con bcrypt
 - ✅ Autenticación JWT
@@ -207,7 +207,7 @@ Testing_Reservas/
 - ✅ Variables de entorno para secretos
 - ✅ Tokens con expiración (1 hora)
 
-## 🤝 Contribuir
+##  Contribuir
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -217,7 +217,7 @@ Testing_Reservas/
 
 **Importante:** Todas las pruebas deben pasar antes de hacer merge.
 
-## 📝 Configuración de Secrets en GitHub
+## Configuración de Secrets en GitHub
 
 Para que el CI/CD funcione correctamente, configura estos secrets en tu repositorio:
 
@@ -226,17 +226,17 @@ Para que el CI/CD funcione correctamente, configura estos secrets en tu reposito
    - `MONGO_URI`: Tu cadena de conexión a MongoDB
    - `JWT_SECRET`: Tu secreto para JWT
 
-## 📖 Documentación Adicional
+## Documentación Adicional
 
 - [Guía de Pruebas Jest](tests/JEST-README.md)
 - [Guía de Pruebas K6](tests/README.md)
 
-## 👩‍💻 Autor
+## Autor
 
 **Denise Rea**
 - GitHub: [@DeniseRea](https://github.com/DeniseRea)
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto es de uso educativo.
 
