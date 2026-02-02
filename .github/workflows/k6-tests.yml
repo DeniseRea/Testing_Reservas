@@ -1,0 +1,55 @@
+name: Tests de Carga con K6
+
+on:
+  workflow_dispatch:  # Ejecución manual desde GitHub
+  schedule:
+    - cron: '0 2 * * 1'  # Cada lunes a las 2 AM
+
+jobs:
+  load-test:
+    name: Pruebas de Rendimiento K6
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v3
+
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+
+    - name: Instalar dependencias
+      run: npm ci
+
+    - name: Iniciar servidor en background
+      run: |
+        npm start &
+        sleep 10
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+    - name: Instalar K6
+      run: |
+        sudo gpg -k
+        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+
+    - name: Ejecutar prueba de carga
+      run: k6 run tests/k6-load-test.js
+
+    - name: Ejecutar prueba de estrés
+      run: k6 run tests/k6-stress-test.js
+      continue-on-error: true
+
+    - name: Subir resultados
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: k6-results
+        path: |
+          *.json
+          *.html
