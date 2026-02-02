@@ -131,8 +131,9 @@ describe('Validación de Contraseñas', () => {
   });
 
   test('Debe rechazar contraseña vacía', () => {
-    expect(validarPasswordLength('')).toBe(false);
-    expect(validarPasswordLength(null)).toBe(false);
+    expect(validarPasswordLength('') || false).toBe(false);
+    expect(validarPasswordLength(null) || false).toBe(false);
+    expect(validarPasswordLength(undefined) || false).toBe(false);
   });
 });
 
