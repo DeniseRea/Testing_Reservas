@@ -8,21 +8,39 @@ on:
 jobs:
   load-test:
     name: Pruebas de Rendimiento K6
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - name: Checkout del código
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configurar Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '20.x'
 
     - name: Instalar dependencias
       run: npm ci
 
-    - name: Iniciar servidor en background
+    - name: Instalar K6 (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo gpg -k
+        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+
+    - name: Instalar K6 (Windows)
+      if: runner.os == 'Windows'
+      run: choco install k6
+
+    - name: Iniciar servidor en background (Linux/Mac)
+      if: runner.os != 'Windows'
       run: |
         npm start &
         sleep 10
@@ -30,13 +48,14 @@ jobs:
         MONGO_URI: ${{ secrets.MONGO_URI }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-    - name: Instalar K6
+    - name: Iniciar servidor en background (Windows)
+      if: runner.os == 'Windows'
       run: |
-        sudo gpg -k
-        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-        sudo apt-get update
-        sudo apt-get install k6
+        Start-Process -NoNewWindow -FilePath "npm" -ArgumentList "start"
+        Start-Sleep -Seconds 10
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     - name: Ejecutar prueba de carga
       run: k6 run tests/k6-load-test.js
@@ -46,10 +65,11 @@ jobs:
       continue-on-error: true
 
     - name: Subir resultados
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: k6-results
+        name: k6-results-${{ matrix.os }}
         path: |
           *.json
           *.html
+        retention-days: 30

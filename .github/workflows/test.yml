@@ -8,19 +8,21 @@ on:
 
 jobs:
   test:
-    name: Ejecutar Pruebas con Jest
-    runs-on: ubuntu-latest
+    name: Pruebas en ${{ matrix.os }} - Node ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false  # Continuar aunque falle en un SO
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [18.x, 20.x]
 
     steps:
     - name: Checkout del código
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configurar Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -32,26 +34,13 @@ jobs:
       run: npm test
 
     - name: Generar reporte de cobertura
-      if: matrix.node-version == '20.x'
-      run: npm test -- --coverage --coverageReporters=text-lcov > coverage.lcov
+      if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20.x'
+      run: npm test -- --coverage
 
-    - name: Subir cobertura a Codecov (opcional)
-      if: matrix.node-version == '20.x'
-      uses: codecov/codecov-action@v3
+    - name: Subir artefactos de cobertura
+      if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20.x'
+      uses: actions/upload-artifact@v4
       with:
-        file: ./coverage.lcov
-        fail_ci_if_error: false
-      continue-on-error: true
-
-    - name: Comentar resultado en PR
-      if: always() && github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: '✅ Pruebas unitarias completadas. Revisa los logs para más detalles.'
-          })
-      continue-on-error: true
+        name: coverage-report
+        path: coverage/
+        retention-days: 30
